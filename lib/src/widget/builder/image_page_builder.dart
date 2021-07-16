@@ -42,7 +42,7 @@ class _ImagePageBuilderState extends State<ImagePageBuilder> {
         child: getImage(context));
   }
 
-  Widget getImage(context) {
+  Widget getImage(BuildContext context) {
     if (widget.asset.relativePath == null) {
       return ExtendedImage(
         image: AssetEntityImageProvider(
@@ -77,7 +77,7 @@ class _ImagePageBuilderState extends State<ImagePageBuilder> {
       );
     } else {
       return ExtendedImage.network(
-        "https://qiniu.gongxueyun.com/upload/" + widget.asset.relativePath,
+        "https://qiniu.gongxueyun.com/upload/" + widget.asset.relativePath!,
         fit: BoxFit.contain,
         mode: ExtendedImageMode.gesture,
         onDoubleTap: builder.updateAnimation,
