@@ -2,9 +2,8 @@
 /// [Author] Alex (https://github.com/Alex525)
 /// [Date] 2020/4/6 15:07
 ///
-import 'package:flutter/material.dart';
 import 'package:extended_image/extended_image.dart';
-
+import 'package:flutter/material.dart';
 import 'package:wechat_assets_picker/src/constants/constants.dart';
 
 class ImagePageBuilder extends StatefulWidget {
@@ -38,9 +37,14 @@ class _ImagePageBuilderState extends State<ImagePageBuilder> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: builder.switchDisplayingDetail,
-      child: ExtendedImage(
+        behavior: HitTestBehavior.opaque,
+        onTap: builder.switchDisplayingDetail,
+        child: getImage(context));
+  }
+
+  Widget getImage(context) {
+    if (widget.asset.relativePath == null) {
+      return ExtendedImage(
         image: AssetEntityImageProvider(
           widget.asset,
           isOriginal: widget.previewThumbSize == null,
@@ -70,7 +74,35 @@ class _ImagePageBuilderState extends State<ImagePageBuilder> {
             hasLoaded: loaded,
           );
         },
-      ),
-    );
+      );
+    } else {
+      return ExtendedImage.network(
+        "https://qiniu.gongxueyun.com/upload/" + widget.asset.relativePath,
+        fit: BoxFit.contain,
+        mode: ExtendedImageMode.gesture,
+        onDoubleTap: builder.updateAnimation,
+        initGestureConfigHandler: (ExtendedImageState state) {
+          return GestureConfig(
+            initialScale: 1.0,
+            minScale: 1.0,
+            maxScale: 3.0,
+            animationMinScale: 0.6,
+            animationMaxScale: 4.0,
+            cacheGesture: false,
+            inPageView: true,
+          );
+        },
+        loadStateChanged: (ExtendedImageState state) {
+          if (state.extendedImageLoadState == LoadState.completed) {
+            loaded = true;
+          }
+          return builder.previewWidgetLoadStateChanged(
+            context,
+            state,
+            hasLoaded: loaded,
+          );
+        },
+      );
+    }
   }
 }
